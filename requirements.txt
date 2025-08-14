@@ -1,6 +1,8 @@
 Flask==2.3.3
 Flask-Login==0.6.2
+Flask-Mail==0.9.1
 Flask-SQLAlchemy==3.0.3
 psycopg2-binary==2.9.7   # if using PostgreSQL
 python-dotenv==1.0.0      # if using .env files
 Werkzeug==2.3.7
+WeasyPrint==59.4

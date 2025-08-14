@@ -1,0 +1,49 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+<h1 align="center">PCTM Construction</h1>
+<form method="POST">
+    <h2 align="center">Añadir Adiestramientos</h2>
+    <div class="form-group">
+      <label for="Training">Adiestramiento</label>
+      <input
+        type="text"
+        class="form-control"
+        id="Training"
+        name="Training"
+        placeholder="Entre nombre de Adiestramiento"
+      />
+    </div>
+       
+    <br />
+    <button type="submit" class="btn btn-primary btn-block"> Someter</button>
+  </form>
+
+  <br/>
+  <h2>Todos los Adiestramientos</h2>
+  <table class="table table-stripped">
+      <thead>
+          <tr>
+              
+              <th>Adiestramiento</th>
+              <th>Adiestramiento</th>
+              
+          </tr>
+      </thead>
+      <tbody>
+        {% set half = (trainings_all|length //2) + (trainings_all|length % 2) %}
+        {% for i in range(half) %}
+          <tr>
+              
+            <td>{{ trainings_all[i].name}}</td>
+            <td>{% if i + half < trainings_all|length %}
+                {{ trainings_all[i + half].name }}
+              {% endif %}
+            </td>
+             
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+
+{% endblock %}

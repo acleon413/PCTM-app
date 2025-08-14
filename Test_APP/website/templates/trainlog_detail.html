@@ -1,0 +1,66 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+  <div class="position-relative" style="height: 56px;">
+    <!-- Back Button (left) -->
+    <a href="/trainings_log"
+       class="btn btn-outline-dark position-absolute"
+       style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+      &#8592; 
+    </a>
+    <!-- Centered Title -->
+    <h1 class="mb-0 position-absolute w-100 text-center"
+        style="pointer-events: none;" >
+      Detalles de Adiestramiento
+    </h1>
+  </div>
+</div>
+
+
+
+
+
+<br />
+<div class="card ">
+        <div class="card-body">
+        <h3 class="card-title">{{ train_log.name.name }}</h3>
+        
+        <hr>
+        <p class="card-text">
+            {{  train_log.training_name.name}}
+        </p>
+        <p class="card-text">
+            Adiestramiento Completado: {{  train_log.date.strftime('%Y-%m-%d')}}
+        </p>
+    </div>
+</div >
+
+<div class="d-flex flex-wrap justify-content-center p-3">
+    {% for file in train_log.traindocs %}
+      {% set ext = file.filename.split('.')[-1].lower() %}
+      <div style="position: relative; display: inline-block; margin: 5px;">
+        {% if ext in ['jpg', 'jpeg', 'png', 'gif'] %}
+          <!-- Image: opens in modal -->
+          <img
+            src="{{ url_for('static', filename='train/' ~ file.filename) }}"
+            alt="Log image"
+            class="zoomable-image"
+            style="max-height: 300px; margin: 5px; cursor: pointer; display: block;"
+            onclick="openModal(this.src)"
+          />
+        {% elif ext == 'pdf' %}
+          <!-- PDF: opens in new tab -->
+          <a href="{{ url_for('static', filename='train/' ~ file.filename) }}" target="_blank">
+            Ver Documento
+          </a>
+        {% else %}
+          <span class="text-muted">Archivo no compatible</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+{% endblock %}
+

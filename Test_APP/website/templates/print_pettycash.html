@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Petty Cash - {{ petty.petty_num }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='pdf.css', _external=True) }}">
+</head>
+
+<body>
+    <img src="{{ url_for('static', filename='PCTMshortlogo.jpg', _external=True) }}" alt="Logo">
+
+    <h3>Petty Cash #{{ petty.petty_num }}</h3>
+    <p><strong>Usuario:</strong> {{ petty.user.first_name }} {{ petty.user.last_name }}</p>
+    <p><strong>Fecha de creación:</strong> {{ petty.date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>Estado actual:</strong> {{ petty.status }}</p>
+
+    <table>
+    <thead>
+        <tr>
+        <th>Fecha</th>
+        <th>Pagado a</th>
+        <th>Materiales</th>
+        <th>Descripción</th>
+        <th>Cantidad</th>
+        <th>Proyecto</th>
+        <th>Recibos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+        <td>{{ item.date.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ item.paid_to }}</td>
+        <td>{{ item.material }}</td>
+        <td>{{ item.description }}</td>
+        <td>${{ '%.2f'|format(item.quantity) }}</td>
+        <td>
+            {% for project in all_projects %}
+            {% if item.project_id == project.id %}
+                {{ project.project }} - {{ project.jobnumber }}
+            {% endif %}
+            {% endfor %}
+        </td>
+        <td>
+            {% for doc in item.docs %}
+            {{ doc.filename }}<br>
+            {% endfor %}
+        </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+    <h4>Total: ${{ '%.2f'|format(petty.total_amount) }}</h4>
+    <div class="form-group">
+        <label for="review_notes">Notas de revisión</label>
+        <textarea class="form-control" rows="4" disabled>{{ petty.review_notes or '' }}</textarea>
+      </div>
+    <p><strong>Procesado por:</strong> {{ petty.processed_by.first_name}} {{petty.processed_by.last_name if petty.processed_by else '' }}</p>
+    <p><strong>Fecha de procesamiento:</strong> {{ petty.processed_date.strftime('%Y-%m-%d') if petty.processed_date else '' }}</p>
+
+</body>
+

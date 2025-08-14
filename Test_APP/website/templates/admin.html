@@ -1,0 +1,110 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<div class="position-relative text-center mb-4" style="min-height: 60px;">
+    <br />
+    <h1  class="mb-0">Dashboard de Administrador</h1>
+    <div class="container mt-5">
+        <h2>Editar Grupos de Usuarios</h2>
+        <br />
+        
+      <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Grupo de Usuario Actual</th>
+            <th>Cambiar Grupo de Usuario</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.first_name }}  {{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.group }}</td>
+            <td>
+              {% if current_user.group in ['admin'] %}
+                <form method="POST" class="form-inline">
+                  <!-- Hidden field to identify the form type -->
+                  <input type="hidden" name="form_name" value="edit_user">
+                  <!-- Hidden field to pass the user's ID -->
+                  <input type="hidden" name="user_id" value="{{ user.id }}">
+                  <select name="group" class="form-control form-control-sm mr-2">
+                    <option value="standard" {% if user.group == 'standard' %}selected{% endif %}>Standard</option>
+                    <option value="manager" {% if user.group == 'manager' %}selected{% endif %}>Manager</option>
+                    <option value="admin" {% if user.group == 'admin' %}selected{% endif %}>Admin</option>
+                  </select>
+                  <button type="submit" class="btn btn-primary btn-sm">Someter Cambio</button>
+                </form>
+              {% else %}
+                <p>De necesitar hacer cambios a los grupos de usuarios, contecte al administrador.</p>
+              {% endif %}
+            </td>
+            
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+      <div class="col-6 col-md-5 mb-4">
+          <a href="/names" class="text-decoration-none">
+            <div class="text-center p-4 border border-dark rounded shadow-sm">
+              <i class="bi bi-card-list h1 d-block mb-3"></i>
+              <h5 class="card-title mb-0">Añadir Nombres de Empleados</h5>
+            </div>
+          </a>
+        </div>
+
+      <div class="col-6 col-md-5 mb-4">
+      <a href="/projects" class="text-decoration-none">
+          <div class="text-center p-4 border border-dark rounded shadow-sm">
+          <i class="bi bi-wrench-adjustable-circle h1 d-block mb-3"></i>
+          <h5 class="card-title mb-0">Crear Proyectos</h5>
+          </div>
+      </a>
+      </div>
+    </div>
+  </div>
+
+
+
+{% endblock %}
+
+<!--
+<div class="card mt-3 p-4">
+                <form method="POST">
+                 User Info (readonly) -->
+               <!-- <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                     <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                 </div>
+                -->
+            <!-- Group Selection 
+                <div class="form-group">
+                    <label for="group">User Group:</label>
+                    <select class="form-control" id="group" name="group">
+                        <option value="standard" {% if user.group == 'standard' %}selected{% endif %}>Standard</option>
+                        <option value="manager" {% if user.group == 'manager' %}selected{% endif %}>Manager</option>
+                        <option value="admin" {% if user.group == 'admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                </div>
+-->
+            <!-- Submit 
+                <button type="submit" class="btn btn-primary">Update Group</button>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary ml-2">Cancel</a>
+            </form>
+        </div>
+-->

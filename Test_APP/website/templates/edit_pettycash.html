@@ -1,0 +1,139 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+{% set editable = petty.status == 'No Completado' %}
+{% if not editable %}
+  <div class="alert alert-info mt-3">
+    Esta solicitud está en estado <strong>{{ petty.status }}</strong> y no puede ser editada.
+  </div>
+{% endif %}
+{% block content %}
+<div class="mb-4">
+  <div class="position-relative" style="height: 56px;">
+    <!-- Back Button (left) -->
+    <a href="#"
+      onclick="history.go(-1)"
+      class="btn btn-outline-dark position-absolute"
+      style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+      &#8592; 
+    </a>
+    <!-- Centered Title -->
+    <h1 class="mb-0 position-absolute w-100 text-center"
+        style="pointer-events: none;" >
+        Petty Cash Request - {{ petty.petty_num }}
+    </h1>
+  </div>
+</div>
+
+<p><strong>User:</strong> {{ petty.user.first_name }} {{ petty.user.last_name }}</p>
+<p><strong>Date:</strong> {{ petty.date.strftime('%Y-%m-%d') }}</p>
+<p>Solo un Job por Petty. De tener varios pettys de jobs differentes, favor de someterlos aparte.</p>
+
+
+<form method="POST" action="{{ url_for('views.update_pettycash_items', petty_id=petty.id) }}" enctype="multipart/form-data">
+  <table class="table table-bordered" id="itemsTable">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Paid To</th>
+        <th>Materiales Comprados</th>
+        <th>Descripcion de Tarea</th>
+        <th>$$</th>
+        <th>Job</th>
+        <th>Recibos</th>
+        <th>Remover</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if items %}
+          {% for item in items %}
+            <tr>
+                <!-- Hidden item_id to track existing items -->
+                <input type="hidden" name="item_id[]" value="{{ item.id }}">
+
+                <td><input type="date" name="date[]" class="form-control" value="{{ item.date.strftime('%Y-%m-%d') if item.date else '' }}" {% if not editable %}disabled{% endif %}></td>
+                <td><input type="text" name="paid_to[]" class="form-control" value="{{ item.paid_to }}" {% if not editable %}disabled{% endif %}></td>
+                <td><input type="text" name="material[]" class="form-control" value="{{ item.material }}" {% if not editable %}disabled{% endif %}></td>
+                <td><input type="text" name="description[]" class="form-control" value="{{ item.description }}" {% if not editable %}disabled{% endif %}></td>
+                <td><input type="number" name="quantity[]" class="form-control qty" step="0.01" value="{{ item.quantity }}" {% if not editable %}disabled{% endif %}></td>
+                <td>
+                    <select name="project_id[]" class="form-control" {% if not editable %}disabled{% endif %}>
+                    {% for project in all_projects %}
+                        <option value="{{ project.id }}" {% if item.project_id == project.id %}selected{% endif %}>{{ project.project }} - {{ project.jobnumber }}</option>
+                    {% endfor %}
+                    </select>
+                </td>
+                <td>
+                  {% for doc in item.docs %}
+                    <div class="uploaded-doc">
+                      <a href="{{ url_for('static', filename='pettycash/' ~ doc.filename) }}" target="_blank" class="me-2">{{ doc.filename }}</a>
+                      {% if petty.status != 'Sometido' and editable %}
+                      <form method="POST" action="{{ url_for('views.delete_pettycash_item_doc', petty_id=petty.id, item_id=item.id, doc_id=doc.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1" onclick="return confirm('Are you sure you want to delete this file?')">
+                            X
+                        </button>
+                      </form>
+                        
+                        
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+              
+                  {% if editable %}
+                    <div class="d-flex align-items-center mt-1">
+                      <input type="file" name="docs_item_{{ item.id }}" class="form-control me-2" onchange="showClearBtn(this)" {% if not item.docs %}required{% endif %}>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="clearFileInput(this)">×</button>
+
+                    </div>
+                  {% endif %}
+                </td>
+                <td>
+                    {% if editable %}
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">×</button>
+                    {% endif %}
+                </td>
+            </tr>
+          {% endfor %}
+        {% elif editable %}
+          <!-- Render one blank row if no items and form is editable -->
+          <tr>
+            <input type="hidden" name="item_id[]" value="">
+            <td><input type="date" name="date[]" class="form-control" required></td>
+            <td><input type="text" name="paid_to[]" class="form-control" required></td>
+            <td><input type="text" name="material[]" class="form-control" required></td>
+            <td><input type="text" name="description[]" class="form-control" required></td>
+            <td><input type="number" name="quantity[]" class="form-control qty" step="0.01" required></td>
+            <td>
+              <select name="project_id[]" class="form-control" required>
+                {% for project in all_projects %}
+                  <option value="{{ project.id }}">{{ project.project }} - {{ project.jobnumber }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <div class="position-relative d-flex align-items-center mt-1">
+                <input type="file" name="docs_new_{{ index }}" class="form-control pe-5" onchange="showClearBtn(this)" required>
+                <input type="hidden" name="new_index[]" value="{{ index }}">
+                <button type="button" class="btn btn-sm btn-danger"  onclick="clearFileInput(this)" style="min-width: 30px;">×</button>
+              </div>
+            </td>
+            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">×</button></td>
+          </tr>
+        {% endif %}
+      </tbody>
+  </table>
+  {% if editable %}
+  <button type="button" class="btn btn-secondary" onclick="addRow()">Add Row</button>
+  {% endif %}
+
+  <div class="mt-4">
+    <h5>Total Amount: $<span id="totalAmount">0.00</span></h5>
+  </div>
+    
+
+  {% if editable %}
+    <button type="submit" name="action" value="save" class="btn btn-warning mt-3">Guardar Cambios</button>
+    <button type="submit" name="action" value="submit" class="btn btn-success mt-3">Someter</button>
+    {% endif %}
+</form>
+
+{% endblock %}
+

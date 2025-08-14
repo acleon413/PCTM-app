@@ -1,0 +1,59 @@
+{% extends "base.html"%} {% block title %}Equipment Status{% endblock %} {% block content
+    %}
+</br>
+
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="#"
+         onclick="history.go(-1)"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Estatus de Equipos
+      </h1>
+    </div>
+</div>
+</br>
+ 
+    <table class="table table-stripped">
+        <thead>
+            <tr>
+                <th>Nombre de Equipo</th>
+                <th>UID de Equipo</th>
+                <th>Descripcion de Equipo</th>
+                <th>Estatus</th>
+                <th>Ultimo Despacho</th>
+                <th>Ultima Devolucion</th>
+                <th>Proyecto Actual</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in status_list %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.equipKey }}</td>
+                <td>{{ item.desc }}</td>
+                <td>
+                    {% if item.status == "Disponible" %}
+                        <span style="color:green;">{{ item.status }}</span>
+                    {% else %}
+                        <span style="color: red;">{{ item.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ item.last_dispatch if item.last_dispatch else 'N/A' }}</td>
+                <td>{{ item.last_return if item.last_return else 'N/A' }}</td>
+                <td>{{ item.project.project if item.project.project else "N/A" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+
+    {% endblock %}
+    

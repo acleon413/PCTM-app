@@ -1,0 +1,104 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<form method="POST" enctype="multipart/form-data">
+    <br />
+    <h2 align="center">Forma de Incidentes</h2>
+
+    <div class="form-group">
+     <label for="docs" class="h4"> Documentos </label>
+        <p class="h6"> Solo: ['jpg', 'jpeg', 'png', 'gif', o 'PDF']</p>
+        <input
+        type="file"
+        class="form-control"
+        id="docs"
+        name="docs"
+        placeholder="Select file(s)"
+        required
+        />
+     </div>
+    <div class="form-group">
+     <label for="project_id" class="h4"> Proyecto</label>
+     <select name="project_id" id="project_id" class="form-control" required>
+         <option value="" disabled selected>-- Seleccione Proyecto --</option>
+        {% for proj in all_projects %}
+         <option value="{{ proj.id }}"> {{ proj.project }} - {{ proj.jobnumber }}</option>
+        {% endfor %}
+        </select>
+        <a class="link-opacity-75-hover" id="projects" href="/projects">Crear Proyecto Nuevo</a>
+    </div>
+    <div class="form-group">
+        <label for="Name"> Nombre</label>
+        <select name="Name" id="Name" class="form-control" required>
+          <option value="" disabled selected>-- Seleccione Nombre --</option>
+          {% for name in names_list %}
+              <option value="{{ name.id }}">{{ name.name }}</option>
+          {% endfor %}
+        </select>
+        <a class="link-opacity-75-hover" id="nombres" href="/names">Añadir Nombre Nuevo</a>
+    </div>
+    <div>
+        <label for="Date">Fecha de Incidente:</label>
+        <input type="Date" name="Date" id="Date" required>    
+    </div>
+    <button type="submit" class="btn btn-primary btn-block"> Someter </button>
+</form>
+<br />
+
+<div class="container mt-4">
+    <h2 align="center" > Listado de Incidentes</h2>
+    <div class="form-group">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search by name or training...">
+    </div>
+    
+</div>
+
+
+
+
+<div class="list-group mt-3" id="incidentList">
+    {% for i in sorted_incidents  %}
+        <a href="#" class="list-group-item-action border-dark rounded">
+          <div class="d-flex justify-content-between align-items-center p-3 border border-dark rounded">
+            <div class="flex-grow-1">
+                <p>{{ i.name.name }}</p>
+                <p>{{ i.project.project }}</p>
+                <small>Fecha Occurido: {{ i.date.strftime('%Y-%m-%d') }}</small><br>
+                
+            </div>
+            <div>
+              {% for j in i.indidentesdocs %}
+                {% set ext = j.filename.split('.')[-1].lower() %}
+                <div style="position: relative; display: inline-block; margin: 5px;">
+                    {% if ext in ['jpg', 'jpeg', 'png', 'gif'] %}
+                    <!-- Image: opens in modal -->
+                    <img
+                        src="{{ url_for('static', filename='incident/' ~ j.filename) }}"
+                        alt="Log image"
+                        class="zoomable-image"
+                        style="max-height: 300px; margin: 5px; cursor: pointer; display: block;"
+                        onclick="openModal(this.src)"
+                    />
+                    {% elif ext == 'pdf' %}
+                    <!-- PDF: opens in new tab -->
+                    <a href="{{ url_for('static', filename='incident/' ~ j.filename) }}" target="_blank" class="btn btn-primary">
+                        Ver Documento
+                    </a>
+                    
+                    {% endif %}
+                </div>
+                
+              {% endfor %}
+              
+
+            </div>
+          </div>
+        </a>
+     <br />
+    {% endfor %}
+</div>
+<br />
+
+
+{% endblock %}

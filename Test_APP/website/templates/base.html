@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  
+
+     <style>
+      .zoomable-image {
+        max-height: 100px;
+        margin: 5px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+    
+      .zoomable-image:hover {
+        transform: scale(1.05);
+      }
+    
+      #imgModal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+      }
+      
+      #imgModal div:hover #zoomIcon {
+        opacity: 1;
+      }
+
+      #modalContent {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 90%;
+      }
+    
+      #closeModal {
+        position: absolute;
+        top: 30px;
+        right: 40px;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .img-wrapper .zoom-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        color: white;
+        font-size: 20px;
+        background: rgba(0,0,0,0.5);
+        padding: 2px 6px;
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none; /* so it doesn't block clicking the image */
+      }
+
+      
+    </style>
+    
+
+
+    <title>{% block title %}Home{% endblock %}</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <div class="d-flex align-items-center">
+          
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbar"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand me-2" href="#"> </a>
+          <a class="navbar-brand me-2" href="#">PCTM Construction</a>
+        </div>
+        
+        <div class="collapse navbar-collapse " id="navbar">
+          <ul class="navbar-nav w-100 d-flex flex-column flex-lg-row">
+            {% if user.is_authenticated %}
+            <li class="nav-item">  <!-- Wrap each nav link inside a <li> -->
+              <a class="nav-link text-white" id="home" href="/">Inicio</a>
+            </li>
+            <!--<li class="nav-item">
+              <a class="nav-link text-white" id="daily_log" href="/daily_log">Log Diario</a>
+            </li> -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-white" id="navbarDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Materiales</a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="nav-item nav-link text-dark" id="equipment" href="/materials">Resumen de Materiales</a>
+                {% if current_user.group in ['admin','manager'] %}
+                  <a class="nav-item nav-link text-dark" id="status" href="/materials/new">Añadir Materiales</a>
+                  <a class="nav-item nav-link text-dark" id="dispatch" href="/materials/disp">Despacho materiales</a>
+                {% endif %}
+                
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Equipos
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="nav-item nav-link text-dark" id="equipment" href="/equipment">Listado de Equipos</a>
+                <a class="nav-item nav-link text-dark" id="status" href="/status">Estatus de Equipos</a>
+                <a class="nav-item nav-link text-dark" id="dispatch" href="/dispatch">Despacho de Equipos</a>
+                <a class="nav-item nav-link text-dark" id="return" href="/return">Devolucion de Equipos</a>
+                
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Seguridad
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="nav-item nav-link text-dark" id="equipment" href="/equip_seguridad_estatus"> Inventario de Equipos de Seguridad</a>
+                {% if current_user.group in ['admin','manager'] %}
+                  <!--<a class="nav-item nav-link text-dark" id="dispatch" href="#">Estatus de Certificaciones</a> -->
+                  <a class="nav-item nav-link text-dark" id="dispatch" href="/incidentes">Incidentes</a>
+                {% endif %}
+                
+              </div>
+            </li>
+              {% if current_user.group in ['admin','manager'] %}
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Adiestramientos
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="nav-item nav-link text-dark" id="trainings" href="/trainings">Adiestramientos</a>
+                    <a class="nav-item nav-link text-dark" id="trainings_logs" href="/trainings_log">Adiestramientos log</a>
+                    
+                  </div>
+                </li>
+              {% endif %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Petty Cash
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="nav-link text-dark" id="pettycash" href="/pettycash">Petty Cash</a>
+                {% if current_user.group in ['admin','manager'] %}
+                  {% if current_user.first_name in ['Alberto', 'Elsie', 'Admin']%}
+                    <a class="nav-link text-dark" id="pettycash_acc" href="/pettycash/accounting">Manejar Pettys ACC</a>
+                  {% endif %}
+                  <a class="nav-link text-dark" id="pettycash_acc" href="/pending_approvals">Manejar Pettys ENG</a>
+                {% endif %}
+                
+              </div>
+              
+            </li>
+                
+            {% endif %}
+          </ul>
+          
+          <ul class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Hola, {{ user.username }}
+              </a>
+              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <a class="nav-item nav-link text-dark" id="logout" href="/logout">Logout</a>
+                <a class="nav-item nav-link text-dark" id="profile" href="/profile">Mi Perfil</a>
+                <a class="nav-item nav-link text-dark" id="admin" href="/admin/dashboard">Administrador</a>
+              </div>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link text-white" id="login" href="/login">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" id="signUp" href="/sign-up">Crear Cuenta</a>
+            </li>
+            {% endif %}
+          </ul>           
+          
+          
+        
+        </div>
+      </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true)%} {% if
+    messages%} {% for category, message in messages %} {% if category == 'error'
+    %}
+    <div class="alert alert-danger alter-dismissable fade show" role="'alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% else %}
+    <div class="alert alert-success alter-dismissable fade show" role="'alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
+
+    <div class="container">{% block content %} {% endblock %}</div>
+
+    <div id="imgModal">
+      <span id="closeModal" onclick="closeModal()">×</span>
+      <img id="modalContent" src="">
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+    
+    
+
+    <script>
+      function openModal(src) {
+        const modal = document.getElementById("imgModal");
+        const modalImg = document.getElementById("modalContent");
+        modal.style.display = "block";
+        modalImg.src = src;
+      }
+
+      function closeModal() {
+        document.getElementById("imgModal").style.display = "none";
+      }
+
+      // Optional: close on click outside image
+      document.getElementById("imgModal").addEventListener("click", function (e) {
+        if (e.target.id === "imgModal") {
+          closeModal();
+        }
+      });
+
+      // Optional: close on ESC key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          closeModal();
+        }
+      });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          const searchInput = document.getElementById("searchInput");
+          const incidentItems = document.querySelectorAll("#incidentList > a");
+      
+          searchInput.addEventListener("keyup", function() {
+              const searchValue = searchInput.value.toLowerCase();
+      
+              incidentItems.forEach(item => {
+                  const text = item.textContent.toLowerCase();
+                  item.style.display = text.includes(searchValue) ? "" : "none";
+              });
+          });
+      });
+      </script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const searchInput = document.getElementById("searchInput");
+      const tableRows = document.querySelectorAll("#materialList tr");
+  
+      searchInput.addEventListener("keyup", function() {
+          const searchValue = searchInput.value.toLowerCase();
+          let anyVisible = false;
+  
+          tableRows.forEach(row => {
+              const materialName = row.querySelector("td a").textContent.toLowerCase();
+              if (materialName.includes(searchValue)) {
+                  row.style.display = "";
+                  anyVisible = true;
+              } else {
+                  row.style.display = "none";
+              }
+          });
+  
+          const noResultRow = document.getElementById("noResultsRow");
+          if (!anyVisible) {
+              if (!noResultRow) {
+                  const newRow = document.createElement("tr");
+                  newRow.id = "noResultsRow";
+                  newRow.innerHTML = `<td colspan="7" class="text-center"><strong>No se encontraron materiales.</strong></td>`;
+                  document.getElementById("materialList").appendChild(newRow);
+              }
+          } else {
+              if (noResultRow) noResultRow.remove();
+          }
+      });
+  });
+  </script>
+  
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <script>
+      document.getElementById('downloadExcelBtn').addEventListener('click', () => {
+        // Collect tab info dynamically from your tabs and tables
+        const workbook = XLSX.utils.book_new();
+
+        // Your tab links: find all <a> in the tab list
+        const tabs = document.querySelectorAll('#projectTabs a.nav-link');
+
+        tabs.forEach(tab => {
+          const tabName = tab.textContent.trim();
+
+          // Get train id from href attribute (#content-123)
+          const contentId = tab.getAttribute('href').replace('#content-', '');
+          const table = document.getElementById(`table-${contentId}`);
+          if (!table) return;
+
+          // Extract header indexes
+          const headers = Array.from(table.querySelectorAll('thead th')).map(h => h.textContent.trim().toLowerCase());
+
+          const nameIdx = headers.findIndex(h => h.includes('nombre'));
+          const dateIdx = headers.findIndex(h => h.includes('fecha'));
+          const fileIdx = headers.findIndex(h => h.includes('documentos'));
+
+          if (nameIdx === -1 || dateIdx === -1 || fileIdx === -1) return;
+
+          // Prepare data array with header
+          const data = [['Nombre', 'Fecha de Adiestramiento', 'Documento Adjunto']];
+
+          // Rows
+          const rows = table.querySelectorAll('tbody tr');
+
+          rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+
+            // Name text
+            const name = cells[nameIdx]?.textContent.trim() || '';
+
+            // Date text
+            const date = cells[dateIdx]?.textContent.trim() || '';
+
+            // Check if there are files attached: look for any <div> inside the file cell that is not 'N/A'
+            const fileCell = cells[fileIdx];
+            let fileAttached = 'No';
+            if (fileCell) {
+              // Your HTML shows inside fileCell there are multiple <div> with text or a single <span>N/A</span>
+              if (fileCell.querySelector('div')) {
+                // If there is at least one div, assume 'Yes'
+                fileAttached = 'Sí';
+              } else if (fileCell.textContent.trim() !== 'N/A') {
+                fileAttached = 'Sí';
+              }
+            }
+
+            data.push([name, date, fileAttached]);
+          });
+
+          // Convert array to sheet
+          const ws = XLSX.utils.aoa_to_sheet(data);
+
+          // Append sheet to workbook with the tab name
+          XLSX.utils.book_append_sheet(workbook, ws, tabName.substring(0, 31)); // Excel sheet names max 31 chars
+        });
+
+        // Export
+        XLSX.writeFile(workbook, 'adiestramientos.xlsx');
+      });
+    </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let rowCount = document.querySelectorAll("#itemsTable tbody tr").length;
+  
+    window.addRow = function () {
+      const tableBody = document.querySelector('#itemsTable tbody');
+      const firstRow = tableBody.querySelector('tr');
+      const newRow = firstRow.cloneNode(true);
+  
+      newRow.querySelectorAll('input, select').forEach((el) => {
+        if (el.name.startsWith('item_id')) {
+          el.value = "";
+        } else if (el.type === 'file') {
+          const newFile = document.createElement('input');
+          newFile.type = 'file';
+          newFile.name = `docs_new_${rowCount}`;
+          newFile.className = el.className;
+          newFile.setAttribute('onchange', 'showClearBtn(this)');
+          el.parentNode.replaceChild(newFile, el);
+  
+          const clearBtn = newRow.querySelector('button.btn-outline-danger');
+          if (clearBtn) clearBtn.classList.add('d-none');
+        } else {
+          el.value = "";
+        }
+      });
+  
+      const fileCell = newRow.cells[6];
+      fileCell.innerHTML = `
+        <div class="position-relative d-flex align-items-center mt-1">
+          <input type="file" name="docs_new_${rowCount}" class="form-control pe-5" onchange="showClearBtn(this)" required>
+          <input type="hidden" name="new_index[]" value="${rowCount}">
+          <button type="button" class="btn btn-sm btn-danger" onclick="clearFileInput(this)" style="min-width: 30px;">×</button>
+        </div>
+      `;
+  
+      // Remove any doc download links (if any)
+      newRow.querySelectorAll("a").forEach(a => a.remove());
+  
+      tableBody.appendChild(newRow);
+      rowCount++;
+      calculateTotal();
+    };
+  
+    window.removeRow = function (btn) {
+      const rows = document.querySelectorAll("#itemsTable tbody tr");
+      if (rows.length > 1) {
+        btn.closest("tr").remove();
+        calculateTotal();
+      }
+    };
+  
+    function calculateTotal() {
+      let total = 0;
+      document.querySelectorAll(".qty").forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        total += value;
+      });
+      const totalDisplay = document.getElementById("totalAmount");
+      if (totalDisplay) {
+        totalDisplay.textContent = total.toFixed(2);
+      }
+    }
+  
+    document.addEventListener('input', function (e) {
+      if (e.target.classList.contains("qty")) {
+        calculateTotal();
+      }
+    });
+  
+    calculateTotal(); // initial total on page load
+  });
+  </script>
+  
+
+<script>
+  function showClearBtn(input) {
+    const clearBtn = input.nextElementSibling;
+    if (clearBtn && input.files.length > 0) {
+      clearBtn.classList.remove('d-none');
+    }
+  }
+
+  function clearFileInput(button) {
+    const fileInput = button.previousElementSibling; // assumes clearBtn is immediately after input
+    if (fileInput) {
+    fileInput.value = '';          // clear the selected file
+    button.classList.add('d-none'); // hide the clear button again
+  }
+  }
+  function removeExistingFile(button, itemId, docId) {
+    console.log("Trying to remove file:", itemId, docId); // Debug
+
+    // Try to find the input that should mark the doc for deletion
+    const inputSelector = `input[name="delete_docs_${itemId}[]"][value="${docId}"]`;
+    let hiddenInput = document.querySelector(inputSelector);
+
+    if (!hiddenInput) {
+      // If not found, create it dynamically
+      hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = `delete_docs_${itemId}[]`;
+      hiddenInput.value = docId;
+      hiddenInput.classList.add('doc-delete-field');
+      document.querySelector('form').appendChild(hiddenInput);
+    }
+
+    hiddenInput.classList.remove('d-none');
+
+    // Remove visual element
+    const wrapper = button.closest('.uploaded-doc');
+    if (wrapper) {
+      wrapper.remove();
+    }
+  }
+</script>
+  
+    
+
+    
+
+ 
+    <!-- to add image or javascript -->
+
+    {% block javascript %}
+    <script type="text/javascript">
+      function deleteLog(LogId) {
+        fetch("/delete-log", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ LogId: LogId }),
+        })
+        .then((res) => {
+          if (res.ok) {
+            window.location.href = "/daily_log";
+          } else {
+            alert("Failed to delete log entry.");
+          }
+        });
+      }
+    </script>
+    {% endblock %}
+
+
+  </body>
+</html>

@@ -1,0 +1,158 @@
+{% extends "base.html"%} {% block title %}Equipment: Return{% endblock %} {% block content
+    %}
+    <br />
+    <div class="mb-4">
+      <div class="position-relative" style="height: 56px;">
+        <!-- Back Button (left) -->
+        <a href="#"
+           onclick="history.go(-1)"
+           class="btn btn-outline-dark position-absolute"
+           style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+          &#8592; 
+        </a>
+        <!-- Centered Title -->
+        <h1 class="mb-0 position-absolute w-100 text-center"
+            style="pointer-events: none;" >
+          Devolución de Equipos
+        </h1>
+      </div>
+  </div>
+    <br />
+    <form method="POST">
+      <h4 align="center">Forma:</h4>
+      <div class="form-group">
+        <label for="firstNameRetrun"> Primer Nombre</label>
+        <input
+          type="text"
+          class="form-control"
+          id="firstNameReturn"
+          name="firstNameReturn"
+          placeholder="Primer nombre"
+        />
+      </div>
+      <div class="form-group">
+        <label for="lastNameReturn"> Apellido</label>
+        <input
+          type="text"
+          class="form-control"
+          id="lastNameReturn"
+          name="lastNameReturn"
+          placeholder="Apellido"
+        />
+      </div>
+      <div class="form-group">
+        <label for="DispID"> Seleccione Equipo a Devolver</label>
+        <select name="DispID" id="DispID" class="form-control" required>
+          <option value="" disabled selected>-- Seleccione Equipo --</option>
+          {% for item in dispatched_items %}
+            <option 
+            value="{{ item.id }}"
+            data-project="{{item.project}}"
+            data-equip="{{ item.Equip.name}}"
+            >
+            Equipment: {{ item.Equip.equipKey }} - {{ item.Equip.name }}</option>
+          {% endfor %}
+        </select>
+        <!--<input
+          type="number"
+          class="form-control"
+          id="EquipID"
+          name="EquipID"
+          placeholder="Enter Equipment ID"
+        /> -->
+      </div>
+      <div class="form-group">
+        <label> Nombre de Equipo</label>
+        <input
+          type="text"
+          class="form-control"
+          id="equip_name"
+          readonly
+        />
+      </div>
+      <div class="form-group">
+        <label> Proyecto</label>
+        <input
+          type="text"
+          class="form-control"
+          id="equip_project"
+          readonly
+        />
+      </div>
+      <br />
+      <button type="submit" class="btn btn-primary btn-block"> Someter</button>
+    </form>
+
+    <script>
+        function fillDetails() {
+          const select = document.getElementById('DispID');
+          const selected = select.options[select.selectedIndex];
+        
+          document.getElementById('equip_name').value = selected.getAttribute('data-equip') || '';
+          document.getElementById('equip_project').value = selected.getAttribute('data-project') || '';
+        }
+    </script>
+
+    <br/>
+    <h2 align="'center">Listado de Equipos Despachados</h2>
+    <table class="table table-stripped">
+        <thead>
+            <tr>
+                
+                <th>UID de Equipo</th>
+                <th>Nombre de Equipo</th>
+                <th>Proyecto</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in dispatched_items %}
+            <tr>
+                
+                <td>{{ d.Equip.equipKey }}</td>
+                <td>{{ d.Equip.name }}</td>
+                <td>{{ d.project }}</td>
+                <td>{{ d.date.strftime('%Y-%m-%d')  }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br/>
+    <h2>Listado de Equipos Devueltos</h2>
+    <table class="table table-stripped">
+        <thead>
+            <tr>
+                
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>UID de Equipo</th>
+                <th>Nombre de Equipo</th>
+                <th>Proyecto</th>
+                <th>Fecha de Devolucion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in all_returns %}
+            <tr>
+                
+                <td>{{ r.firstname }}</td>
+                <td>{{ r.lastname }}</td>
+                <td>{{ r.dispatch.Equip.equipKey }}</td>
+                <td>{{ r.dispatch.Equip.name}}</td>
+                <td>{{ r.dispatch.project }}</td>
+                <td>{{ r.date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <ul class="list-group list-group-flush" id="equipment">
+        {% for equip in  Equip %}
+        <li class="list-group-item">{{ equip.name }}
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% endblock %}
+    

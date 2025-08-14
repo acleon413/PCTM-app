@@ -1,0 +1,55 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+<br />
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="#"
+         onclick="history.go(-1)"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Petty Cash de {{ user.first_name }} {{user.last_name}}
+      </h1>
+    </div>
+</div>
+
+
+<br />
+<br />
+
+<form action="{{ url_for('views.create_pettycash') }}" method="POST">
+    <button class="btn btn-success">➕ Petty Cash Nuevo</button>
+</form>
+
+<br/>
+  <h2> Mis Pettys</h2>
+  <table class="table table-stripped">
+      <thead>
+          <tr>
+              
+              <th>Nombre de Petty</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estatus</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for i in my_requests %}
+          <tr onclick="window.location='{{ url_for('views.edit_pettycash', petty_id=i.id) }}'" style="cursor: pointer;">
+              
+              <td>{{ i.petty_num}}</td>
+              <td>{{ i.date.strftime('%Y-%m-%d') }}</td>
+              <td>${{ i.total_amount }}</td>
+              <td>{{ i.status }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+
+{% endblock %}

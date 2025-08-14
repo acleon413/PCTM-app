@@ -1,0 +1,113 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<br />
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="#"
+         onclick="history.go(-1)"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Creacion de Proyectos
+      </h1>
+    </div>
+</div>
+<br />
+
+<form method="POST">
+    
+    <br />
+    <div class="form-group">
+      <label for="Project"> Nombre de Proyecto</label>
+      <input
+        type="text"
+        class="form-control"
+        id="Project"
+        name="Project"
+        placeholder="Entre nombre de proyecto"
+      />
+    </div>
+    
+      <div class="form-group">
+        <label for="JobNmber"> Numero de Job</label>
+        <input
+          type="text"
+          class="form-control"
+          id="JobNumber"
+          name="JobNumber"
+          placeholder="Entre numero de job"
+        />
+      </div>
+      <div class="form-group">
+        <label for="engineer"> Ingeniero A Cargo</label>
+        <select class="form-control" id="engineer" name="engineer" required>
+          <option value="">Seleccione un ingeniero</option>
+          <option value="CARLOS PAEZ">Carlos Paez</option>
+          <option value="AMANDA MARRERO">Amanda Marrero</option>
+          <option value="MARIEL GARCIA">Mariel Garcia</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="email"> Correo Electronico de Ingeniero</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          placeholder="Email"
+          readonly
+        />
+      </div>
+   
+    <br />
+    <button type="submit" class="btn btn-primary btn-block"> Someter</button>
+  </form>
+
+  <br/>
+  <h2>Todos los Proyectos</h2>
+  <table class="table table-stripped">
+      <thead>
+          <tr>
+              
+              <th>Nombre de Proyecto</th>
+              <th>Numero de Job</th>
+              <th>Nombre de Ingeniero</th>
+              <th>Correo Electronico de Ingeniero</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for proj in projects_all %}
+          <tr>
+              
+              <td>{{ proj.project }}</td>
+              <td>{{ proj.jobnumber }}</td>
+              <td> {{ proj.engineer }}</td>
+              <td> {{proj.email}}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+
+  <script>
+    const engineerEmails = {
+      "CARLOS PAEZ": "cpaez@pctmconstruction.com",
+      "AMANDA MARRERO": "amarrero@pctmconstruction.com",
+      "MARIEL GARCIA": "mgarcia@pctmconstruction.com"
+    };
+  
+    document.getElementById("engineer").addEventListener("change", function () {
+      const selectedEngineer = this.value;
+      document.getElementById("email").value =
+        engineerEmails[selectedEngineer] || "";
+    });
+  </script>
+
+
+{% endblock %}

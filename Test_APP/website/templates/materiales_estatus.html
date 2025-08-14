@@ -1,0 +1,92 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+<br />
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Materiales
+      </h1>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-6 col-md-5 mb-4">
+            <a href="/materials/new" class="text-decoration-none">
+              <div class="text-center p-4 border border-dark rounded shadow-sm">
+                <i class="bi bi-card-list h1 d-block mb-3"></i>
+                <h5 class="card-title mb-0">Añadir Materiales</h5>
+              </div>
+            </a>
+          </div>
+
+        <div class="col-6 col-md-5 mb-4">
+            <a href="/materials/disp" class="text-decoration-none">
+                <div class="text-center p-4 border border-dark rounded shadow-sm">
+                <i class="bi bi-wrench-adjustable-circle h1 d-block mb-3"></i>
+                <h5 class="card-title mb-0">Despacho de Materiales</h5>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<br/>
+  <h2>Materiales</h2>
+  <form method="GET" action="{{ url_for('views.material_status') }}" class="d-flex mb-3">
+    <div class="input-group">
+        <input type="text" id="searchInput" class="form-control " placeholder="Buscar material...">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+  </form>
+  <table class="table table-stripped">
+      <thead>
+          <tr>
+              
+              <th>Material</th>
+              <th>Dimenciones</th>
+              <th>Cantidad Disponible</th>
+              <th>Unidad</th>
+              <th>Localización</th>
+              <th>Ultima Fecha de Reposición</th>
+              <th>Ultima Fecha de Despacho</th>
+          </tr>
+      </thead>
+      <tbody id="materialList">
+        {% for mat in all_materials %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('views.material_detail', mat_id=mat.id)}}">
+                    {{ mat.material_name}}
+                    </a>
+                </td>
+                <td>{{ mat.dimensions}}</td>
+                <td>{{ mat.qty}}</td>
+                <td>{{ mat.unit}}</td>
+                <td>{{ mat.loc}}</td>
+                <td>
+                    {% if mat.replenished_date%}
+                        {{ mat.replenished_date.strftime('%Y-%m-%d') }}
+                    {% else %}
+                        <em>No ha sido repuesto aún</em>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if mat.materialdispatch %}
+                        {{ mat.materialdispatch[-1].date.strftime('%Y-%m-%d') }}
+                    {% else %}
+                        <em>No despachos aún</em>
+                    {% endif %}
+                </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+<br />
+<br />
+{% endblock %}

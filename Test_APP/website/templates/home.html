@@ -1,0 +1,84 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+<img src="{{ url_for('static', filename='logolongformat.jpg') }}" class="img-fluid" alt="Responsive image">
+
+
+<h1 align="center">Bienvenidos, {{ user.first_name }} {{user.last_name}}!</h1>
+
+<br />
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+        <!--<div class="col-6 col-md-5 mb-4">
+            <a href="/daily_log" class="text-decoration-none">
+              <div class="text-center p-4 border border-dark rounded shadow-sm">
+                <i class="bi bi-card-list h1 d-block mb-3"></i>
+                <h5 class="card-title mb-0">Log Diario</h5>
+              </div>
+            </a>
+          </div> -->
+
+        
+      <!-- Item 1 -->
+      <div class="col-6 col-md-5 mb-4">
+        <a href="/equipment" class="text-decoration-none">
+          <div class="text-center p-4 border border-dark rounded shadow-sm">
+            <i class="bi bi-tools h1 d-block mb-3"></i>
+            <h5 class="card-title mb-0">Listado de Equipos</h5>
+          </div>
+        </a>
+      </div>
+  
+      <!-- Item 2 -->
+      <div class="col-6 col-md-5 mb-4">
+        <a href="/status" class="text-decoration-none">
+          <div class="text-center p-4 border border-dark rounded shadow-sm">
+            <i class="bi bi-clipboard-check h1 d-block mb-3"></i>
+            <h5 class="card-title mb-0">Estatus de Equipos</h5>
+          </div>
+        </a>
+      </div>
+  
+      <!-- Placeholder for Item 3 -->
+      <div class="col-6 col-md-5 mb-4">
+        <a href="/dispatch" class="text-decoration-none">
+          <div class="text-center p-4 border border-dark rounded shadow-sm">
+            <i class="bi bi-box-arrow-in-down h1 d-block mb-3"></i>
+            <h5 class="card-title mb-0">Despacho de Equipo</h5>
+          </div>
+        </a>
+      </div>
+  
+      <!-- Placeholder for Item 4 -->
+      <div class="col-6 col-md-5 mb-4">
+        <a href="/return" class="text-decoration-none">
+          <div class="text-center p-4 border border-dark rounded shadow-sm">
+            <i class="bi bi-box-arrow-in-down h1 d-block mb-3"></i>
+            <h5 class="card-title mb-0">Devolucion de Equipos</h5>
+          </div>
+        </a>
+      </div>
+
+      <!-- Placeholder for Item 4 -->
+      <div class="col-6 col-md-5 mb-4">
+        <a href="/equip_seguridad_estatus" class="text-decoration-none">
+          <div class="text-center p-4 border border-dark rounded shadow-sm">
+            <i class="bi bi-cone-striped h1 d-block mb-3"></i>
+            <h5 class="card-title mb-0">Equipos de Seguridad</h5>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-6 col-md-5 mb-4">
+        <a href="/pettycash" class="text-decoration-none">
+          <div class="text-center p-4 border border-dark rounded shadow-sm">
+            <i class="bi bi-currency-dollar h1 d-block mb-3"></i>
+            <h5 class="card-title mb-0">Petty Cash</h5>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

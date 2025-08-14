@@ -1,0 +1,108 @@
+{% extends "base.html"%} {% block title %}Equipment: Dispatch{% endblock %} {% block content
+    %}
+    <br />
+    <div class="mb-4">
+        <div class="position-relative" style="height: 56px;">
+          <!-- Back Button (left) -->
+          <a href="#"
+             onclick="history.go(-1)"
+             class="btn btn-outline-dark position-absolute"
+             style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+            &#8592; 
+          </a>
+          <!-- Centered Title -->
+          <h1 class="mb-0 position-absolute w-100 text-center"
+              style="pointer-events: none;" >
+            Forma de Despacho de Materials
+          </h1>
+        </div>
+    </div>
+    <br />
+</br>
+
+    <form method="POST">
+      
+      <div class="form-group">
+        <label for="FirstName"> Nombre </label>
+        <input
+          type="text"
+          class="form-control"
+          id="FirstName"
+          name="FirstName"
+          placeholder="Nombre"
+        />
+      </div>
+      <div class="form-group">
+        <label for="LastName"> Apellido </label>
+        <input
+          type="text"
+          class="form-control"
+          id="LastName"
+          name="LastName"
+          placeholder="Apellido"
+        />
+      </div>
+      <div class="form-group">
+        <label for="ProjectID" class="h4"> Proyecto</label>
+        <select name="ProjectID" id="ProjectID" class="form-control" required>
+          <option value="" disabled selected>-- Seleccione Proyecto --</option>
+          {% for proj in all_projects %}
+            <option value="{{ proj.id }}">{{ proj.project}} - {{ proj.jobnumber }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="MaterialID" class="h4"> Material</label>
+        <select name="MaterialID" id="MaterialID" class="form-control" required>
+            <option value="" disabled selected>-- Seleccione Material --</option>
+           {% for mat in all_materials %}
+            <option value="{{ mat.id }}"> {{ mat.material_name }}</option>
+           {% endfor %}
+           </select>
+           
+       </div>
+       <div class="form-group">
+        <label for="DispQuantity"> Cantidad a Despachar </label>
+        <input
+          type="number"
+          class="form-control"
+          id="DispQuantity"
+          name="DispQuantity"
+          placeholder="Cantidad"
+        />
+      </div>
+      <br />
+      <button type="submit" class="btn btn-primary btn-block"> Someter</button>
+    </form>
+
+    <br/>
+    <h2>Todas Transacciones de Despacho de Material</h2>
+    <table class="table table-stripped">
+        <thead>
+            <tr>
+                
+                <th>Nombre</th>
+                <th>Material</th>
+                <th>Cantidad</th>
+                <th>Proyecto</th>
+                <th>Fecha de Despacho</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for disp in all_mat_disp %}
+            <tr>
+                
+                <td>{{ disp.firstname }} {{disp.lastname}}</td>
+                
+                <td>{{ disp.material.material_name }}</td>
+                <td>{{ disp.disp_qty }}</td>
+                <td>{{ disp.project.project }}</td>
+                <td>{{ disp.date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+    {% endblock %}
+    

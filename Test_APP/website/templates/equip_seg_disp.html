@@ -1,0 +1,84 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="#"
+         onclick="history.go(-1)"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Despacho de Equipo de Seguridad
+      </h1>
+    </div>
+</div>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="EquipSegID"> Equipo</label>
+        <select name="EquipSegID" id="EquipSegID" class="form-control" required>
+          <option value="" disabled selected>-- Seleccione Equipo --</option>
+          {% for equip in all_equip_seg %}
+            <option value="{{ equip.id }}">{{ equip.name }} </option>
+          {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="qty"> Cantidad</label>
+        <input
+          type="number"
+          class="form-control"
+          id="qty"
+          name="qty"
+          placeholder="Entre Cantidad"
+        />
+      </div>
+      <div class="form-group">
+        <label for="ProjectID" class="h4"> Proyecto</label>
+        <select name="ProjectID" id="ProjectID" class="form-control" required>
+         <option value="" disabled selected>-- Seleccione Proyecto --</option>
+        {% for proj in all_projects %}
+         <option value="{{ proj.id }}"> {{ proj.project }} - {{ proj.jobnumber }}</option>
+        {% endfor %}
+        </select>
+        <a class="link-opacity-75-hover" id="projects" href="/projects">Crear Proyecto Nuevo</a>
+      </div>
+   
+    <br />
+    <button type="submit" class="btn btn-primary btn-block"> Submit</button>
+</form>
+
+<br/>
+<h2>Todos los Equipos de Seguridad</h2>
+<table class="table table-stripped">
+    <thead>
+        <tr>
+            
+            <th>Nombre de Equipo</th>
+            <th>Cantidad Despachada</th>
+            
+            <th>Unidad</th>
+            <th>Quien?</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for equip in sorted_dispatches %}
+        <tr>
+            
+            <td>{{ equip.equipseguridad_name.name}}</td>
+            <td>{{ equip.qty}}</td>
+            <td>{{ equip.equipseguridad_name.unit}}</td>
+            <td>{{ equip.user.username}}</td>
+            <td>{{ equip.date}}</td>
+        {% endfor %}
+    </tbody>
+</table>
+
+  {% endblock %}

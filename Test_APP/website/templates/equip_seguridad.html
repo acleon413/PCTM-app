@@ -1,0 +1,116 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="/equip_seguridad_estatus"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Añadir Equipos de Seguridad
+      </h1>
+    </div>
+  </div>
+
+<form method="POST">
+    <div class="form-group">
+      <label for="EquipSegName"> Nombre de Equipo</label>
+      <input
+        type="text"
+        class="form-control"
+        id="EquipSegName"
+        name="EquipSegName"
+        placeholder="Entre nombre de equipo"
+      />
+    </div>
+    <div class="form-group">
+        <label for="QTY"> Cantidad</label>
+        <input
+          type="number"
+          class="form-control"
+          id="QTY"
+          name="QTY"
+          placeholder="Entre Cantidad"
+        />
+      </div>
+      <div class="form-group">
+        <label for="UNIT" class="h6"> Unidad</label>
+        <p>Ejemplo: pqte. (Paquete), caja, o unidad para articulos sueltos o solos</p>
+        <input
+          type="text"
+          class="form-control"
+          id="UNIT"
+          name="UNIT"
+          placeholder="Entre Unidad"
+        />
+      </div>
+   
+    <br />
+    <button type="submit" class="btn btn-primary btn-block"> Submit</button>
+  </form>
+
+  <br/>
+  <h2>Todos los Equipos de Seguridad</h2>
+  <table class="table table-stripped">
+      <thead>
+          <tr>
+              
+              <th>Nombre de Equipo</th>
+              <th>Cantidad</th>
+              <th>Unidad</th>
+              <th>Acciones</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for equip in all_equip_seg %}
+          <tr>
+              
+              <td>{{ equip.name}}</td>
+              <td>{{ equip.qty}}</td>
+              <td>{{ equip.unit}}</td>
+              <td>
+                <!-- Button to open modal -->
+                {% if current_user.group in ['admin', 'manager'] %}
+                  <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editQTYModal{{ equip.id }}">
+                    Editar Cantidad
+                  </button>
+                {% else %}
+                  <p>N/A</p>
+                {% endif %}
+              </td>
+          </tr>
+          <!-- Modal -->
+          <div class="modal fade" id="editQTYModal{{ equip.id }}" tabindex="-1" role="dialog" aria-labelledby="editQTYModalLabel{{ equip.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <form method="POST" action="{{ url_for('views.equip_seguridad') }}">
+                <input type="hidden" name="update_id" value="{{ equip.id }}">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editQTYModalLabel{{ equip.id }}">Editar cantidad</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="qty">Nueva cantidad</label>
+                    <input type="number" name="qty" class="form-control" required>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+      </tbody>
+  </table>
+
+{% endblock %}

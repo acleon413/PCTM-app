@@ -1,0 +1,112 @@
+{% extends "base.html"%} {% block title %}Equipment: Dispatch{% endblock %} {% block content
+    %}
+    <br />
+    <div class="mb-4">
+        <div class="position-relative" style="height: 56px;">
+          <!-- Back Button (left) -->
+          <a href="#"
+             onclick="history.go(-1)"
+             class="btn btn-outline-dark position-absolute"
+             style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+            &#8592; 
+          </a>
+          <!-- Centered Title -->
+          <h1 class="mb-0 position-absolute w-100 text-center"
+              style="pointer-events: none;" >
+            Forma de Despacho de Equipos
+          </h1>
+        </div>
+    </div>
+    <br />
+</br>
+
+    <form method="POST">
+      
+      <div class="form-group">
+        <label for="firstNameDispatch"> Nombre </label>
+        <input
+          type="text"
+          class="form-control"
+          id="firstNameDispatch"
+          name="firstNameDispatch"
+          placeholder="Nombre"
+        />
+      </div>
+      <div class="form-group">
+        <label for="lastNameDispatch"> Apellido </label>
+        <input
+          type="text"
+          class="form-control"
+          id="lastNameDispatch"
+          name="lastNameDispatch"
+          placeholder="Apellido"
+        />
+      </div>
+      <div class="form-group">
+        <label for="EquipUID"> UID de Equipo</label>
+        <select name="EquipUID" id="EquipUID" class="form-control" required>
+          <option value="" disabled selected>-- Seleccione Equipo --</option>
+          {% for equip in equip_avail %}
+            <option value="{{ equip.id }}">{{ equip.equipKey }} - {{ equip.name }}</option>
+          {% endfor %}
+        </select>
+        <!--<input
+          type="number"
+          class="form-control"
+          id="EquipID"
+          name="EquipID"
+          placeholder="Enter Equipment ID"
+        /> -->
+      </div>
+      <div class="form-group">
+        <label for="project_id" class="h4"> Proyecto</label>
+        <select name="project_id" id="project_id" class="form-control" required>
+            <option value="" disabled selected>-- Seleccione Proyecto --</option>
+           {% for proj in all_projects %}
+            <option value="{{ proj.id }}"> {{ proj.project }} - {{ proj.jobnumber }}</option>
+           {% endfor %}
+           </select>
+           
+       </div>
+      <br />
+      <button type="submit" class="btn btn-primary btn-block"> Someter</button>
+    </form>
+
+    <br/>
+    <h2>Equipos en el Field</h2>
+    <table class="table table-stripped">
+        <thead>
+            <tr>
+                
+                <th>Nombre</th>
+                
+                <th>UID de Equipo</th>
+                <th>Nombre de Equipo</th>
+                <th>Proyecto</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for disp in dispatches_active %}
+            <tr>
+                
+                <td>{{ disp.firstname }} {{disp.lastname}}</td>
+                
+                <td>{{ disp.Equip.equipKey }}</td>
+                <td>{{ disp.Equip.name }}</td>
+                <td>{{ disp.project.project }}</td>
+                <td>{{ disp.date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <ul class="list-group list-group-flush" id="equipment">
+        {% for equip in  Equip %}
+        <li class="list-group-item">{{ equip.name }}
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% endblock %}
+    

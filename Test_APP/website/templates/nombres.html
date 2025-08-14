@@ -1,0 +1,73 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+<br />
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="#"
+         onclick="history.go(-1)"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Añadir Nombres de Empleados
+      </h1>
+    </div>
+</div>
+
+<div class="container mt-5">
+    
+    <br />
+    </div>
+      <form method="POST">
+        <input type="hidden" name="form_name" value="add_name" />
+        <div class="form-group">
+          <label for="Name"> Añada Nombre</label>
+          <input
+          type="text"
+          class="form-control"
+          id="Name"
+          name="Name"
+          placeholder="Nombre y Apellido(s)"
+          required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Añadir Nombre</button>
+      </form>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <br/>
+    <h2>Listado de Empleados</h2>
+    <p>Total names: {{ names_all|length }}</p>
+
+    <table class="table table-stripped" >
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% set half = (names_all|length //2) + (names_all|length % 2) %}
+          {% for i in range(half) %}
+            <tr>
+                
+              <td>{{ names_all[i].name}}</td>
+              <td>{% if i + half < names_all|length %}
+                  {{ names_all[i + half].name }}
+                {% endif %}
+              </td>
+               
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>    
+
+{% endblock %}

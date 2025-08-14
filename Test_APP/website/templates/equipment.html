@@ -1,0 +1,102 @@
+{% extends "base.html"%} {% block title %}Equipment{% endblock %} {% block content
+    %}
+    <br /> 
+    <div class="mb-4">
+      <div class="position-relative" style="height: 56px;">
+        <!-- Back Button (left) -->
+        <a href="#"
+           onclick="history.go(-1)"
+           class="btn btn-outline-dark position-absolute"
+           style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+          &#8592; 
+        </a>
+        <!-- Centered Title -->
+        <h1 class="mb-0 position-absolute w-100 text-center"
+            style="pointer-events: none;" >
+          Inventario de Equipos
+        </h1>
+      </div>
+  </div>
+    
+    <br />
+    <form method="POST">
+      <h2 align="center">Forma para Nuevos Equipos</h2>
+      <div class="form-group">
+        <label for="EquipName" class="h5" style="font-weight: bold;"> Nombre de Equipo</label>
+        <input
+          type="text"
+          class="form-control"
+          id="EquipName"
+          name="EquipName"
+          placeholder="Ecriba nombre de equipo"
+        />
+      </div>
+      <div class="form-group">
+        <label for="EquipKey" class="h5" style="font-weight: bold;"> UID de Equipo</label>
+        <p>UID de Equipo requiere al menos 8 caracteres</p>
+        <input
+          type="text"
+          class="form-control"
+          id="EquipKey"
+          name="EquipKey"
+          placeholder="Entre ID de equipo que se encuentra en el barcode"
+        />
+      </div>
+      <div class="form-group">
+        <label for="EquipDesc" class="h5" style="font-weight: bold;"> Descripcion de Equipo</label>
+        <input
+          type="text"
+          class="form-control"
+          id="EquipDesc"
+          name="EquipDesc"
+          placeholder="Escriba descripcion de equipo"
+        />
+      </div>
+      <br />
+      <button type="submit" class="btn btn-primary btn-block"> Someter</button>
+    </form>
+
+    <br/>
+    <h2>Listado de Equipos</h2>
+    <form method="get" class="form-inline mb-3">
+      <label for="equip_search" class="mr-2">Busqueda de equipos: </label>
+      <input 
+        type="text" 
+        name="equip" 
+        id="equip_search" 
+        class="form-control mr-2" 
+        placeholder=""
+        value="{{ request.args.get('equip', '') }}">
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+
+    <table class="table table-stripped">
+        <thead>
+            <tr>
+                
+                <th>UID de Equipo</th>
+                <th>Nombre de Equipo</th>
+                <th>Descripcion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for equip in equipments %}
+            <tr>
+                
+                <td>{{ equip.equipKey }}</td>
+                <td>{{ equip.name }}</td>
+                <td>{{ equip.desc }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <ul class="list-group list-group-flush" id="equipment">
+        {% for equip in  Equip %}
+        <li class="list-group-item">{{ equip.name }}
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% endblock %}
+    

@@ -1,0 +1,71 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="#"
+        onclick="history.go(-1)"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Estatus e Historial de Materiales
+      </h1>
+    </div>
+</div>
+
+<br />
+
+<div class="card ">
+    <div class="card-body">
+    <h3 class="card-title">{{ mat.material_name }}</h3>
+    <h6 class="card-subtitle mb-2 text-muted">
+        Cantidad Dispobible: {{ mat.qty }} - {{mat.unit}}<br>
+        Dimensiones: {{ mat.dimensions }}<br>
+        Ultima Fecha de Reposición: {{mat.replenished_date.strftime('%Y-%m-%d')}}<br>
+        Ultima Fecha de Despacho: 
+        {% if mat.materialdispatch %}
+          {{ mat.materialdispatch[-1].date.strftime('%Y-%m-%d') }}
+        {% else %}
+          <em>No despachos aún</em>
+        {% endif %}
+    <br>
+    </h6>
+    </div>
+</div >
+
+<br/>
+  <h2>Transacciones de despacho para: {{mat.material_name}}</h2>
+  <table class="table table-stripped">
+      <thead>
+          <tr>
+              
+              <th>Nombre</th>
+              <th>Proyecto</th>
+              <th>Cantidad</th>
+              <th>Unidad</th>
+              <th>Fecha de Despacho</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for disp in all_mat_disp %}
+          <tr>
+              
+              <td>{{ disp.firstname }} {{ disp.lastname }}</td>
+              <td>{{ disp.project.project }}</td>
+              <td>{{ disp.disp_qty }}</td>
+              <td>{{ mat.unit}}</td>
+              <td>{{ disp.date.strftime('%Y-%m-%d') }}</td>
+
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+  <br />
+  <br />
+  {% endblock %}

@@ -1,0 +1,32 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  margin: 30px;
+}
+
+img {
+  max-width: 200px;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+th, td {
+  border: 1px solid #333;
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background-color: #f0f0f0;
+}
+
+h3, p {
+  margin: 5px 0;
+}

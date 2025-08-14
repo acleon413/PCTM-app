@@ -1,0 +1,80 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<br />
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="#"
+         onclick="history.go(-1)"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Inventario de Equipo de Seguridad
+      </h1>
+    </div>
+</div>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+        
+
+        <div class="col-6 col-md-5 mb-4">
+        <a href="/equip_seguridad_disp" class="text-decoration-none">
+            <div class="text-center p-4 border border-dark rounded shadow-sm">
+            <i class="bi bi-wrench-adjustable-circle h1 d-block mb-3"></i>
+            <h5 class="card-title mb-0">Despacho de Equipo De Seguridad</h5>
+            </div>
+        </a>
+        </div>
+        {% if current_user.group in ['admin','manager'] %}
+        <div class="col-6 col-md-5 mb-4">
+            <a href="/equip_seguridad" class="text-decoration-none">
+              <div class="text-center p-4 border border-dark rounded shadow-sm">
+                <i class="bi bi-card-list h1 d-block mb-3"></i>
+                <h5 class="card-title mb-0">Añadir Equipo de Seguridad Nuevo</h5>
+              </div>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+ </div>
+
+ <br/>
+ <h2>Todos los Equipos de Seguridad</h2>
+ <table class="table table-stripped">
+     <thead>
+         <tr>
+             
+             <th>Nombre de Equipo</th>
+             <th>Cantidad Disponible</th>
+             <th>Unidad</th>
+             
+         </tr>
+     </thead>
+     <tbody>
+         {% for equip in all_equip_seg %}
+         <tr>
+             
+             <td>{{ equip.name}}</td>
+             
+             <td>
+                {% if equip.qty >= 2 %}
+                    <span style="color:green;">{{ equip.qty }}</span>
+                {% else %}
+                    <span style="color: red;">{{ equip.qty }}</span>
+                {% endif %}
+            </td>
+             <td>{{ equip.unit}}</td>
+             
+         </tr>
+         {% endfor %}
+     </tbody>
+ </table>
+
+
+ {% endblock %}

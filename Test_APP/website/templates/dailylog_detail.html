@@ -1,0 +1,60 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="/daily_log"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Detalles de Entrada
+      </h1>
+    </div>
+  </div>
+
+
+<br />
+<div class="card ">
+        <div class="card-body">
+        <h3 class="card-title">{{ log.project.project }}</h3>
+        <h6 class="card-subtitle mb-2 text-muted">
+            Sometido: {{ log.uploaded_at }}<br>
+            Por: {{ log.user.username }}
+        </h6>
+        <hr>
+        <p class="card-text">
+            {{ log.notes or "No se encuentran entradas para este proyecto." }}
+        </p>
+    </div>
+</div >
+<div class="d-flex felx-wrap justify-content-center p-3">
+    {% for image in log.images %}
+        <div style="position: relative; display: inline-block; margin: 5px;">
+            <img
+            src="{{ url_for('static', filename='logs/' ~ image.filename) }}"
+            alt="Log image"
+            class="zoomable-image"
+            style="max-height: 300px; margin: 5px; cursor: pointer; display: block;"
+            onclick="openModal(this.src)"
+            />
+            
+        </div>
+    {% endfor %}
+        
+</div>
+
+{% endblock %}
+
+<!--
+{% for image in log.images %}
+            <a href="{{ url_for('static', filename='logs/' ~ image.filename) }}" data-lightbox="log-{{ log.id }}" data-title="{{ log.project.project }}">
+                <img src="{{ url_for('static', filename='logs/' ~ image.filename) }}" alt="Log image" style="max-height: 200px; border-radius: 5px; margin: 4px;">
+        
+            </a>
+          {% endfor %}
+-->

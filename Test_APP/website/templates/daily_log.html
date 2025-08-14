@@ -1,0 +1,160 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+<h1 align="center">PCTM Construction</h1>
+<form method="POST" enctype="multipart/form-data">
+    <h2 align="center">Logs Diarios</h2>
+
+    <div class="form-group">
+     <label for="images" class="h4"> Adjunte Imagenes </label>
+        <p class="h6"> Solo: ['jpg', 'jpeg', 'png', 'gif']</p>
+        <input
+        type="file"
+        class="form-control"
+        id="images"
+        name="images"
+        placeholder="Select file(s)"
+        multiple
+        required
+        />
+     </div>
+    <div class="form-group">
+     <label for="project_id" class="h4"> Proyecto</label>
+     <select name="project_id" id="project_id" class="form-control" required>
+         <option value="" disabled selected>-- Seleccione Proyecto --</option>
+        {% for proj in all_projects %}
+         <option value="{{ proj.id }}"> {{ proj.project }} - {{ proj.jobnumber }}</option>
+        {% endfor %}
+        </select>
+        <a class="link-opacity-75-hover" id="projects" href="/projects">Crear Proyecto Nuevo</a>
+    </div>
+    <div class="form-group">
+     <label for="Notes" class="h4"> Notas</label>
+        <textarea name="notes" id="'notes" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block"> Someter </button>
+</form>
+<br />
+<h2>Logs Diarios</h2>
+<p> De cometer un error sometiendo el log, solo podra borrar la entrada y volver hacerla. Log que se borra, log que no se puede recuperar.</p>
+<!-- navigation tabs-->
+<ul class="nav nav-tabs" id="projectTabs" role="tablist">
+  {% for project in all_projects %}
+    <li class="nav-item">
+      <a class="nav-link {% if loop.first %}active{% endif %}" 
+              id="tab-{{ project.id }}" 
+              data-toggle="tab" 
+              href="#content-{{ project.id }}" 
+               
+              role="tab" 
+              aria-controls="content-{{ project.id }}" 
+              aria-selected="{{ 'true' if loop.first else 'false' }}">
+        {{ project.project }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+<!-- tab content-->
+<div class="tab-content" id="projectTabsContent">
+  {% for project in all_projects %}
+    <div class="tab-pane fade {% if loop.first %}show active{% endif %}" 
+         id="content-{{ project.id }}" 
+         role="tabpanel" 
+         aria-labelledby="tab-{{ project.id }}">
+      <div class="list-group mt-3 ">
+        {% set project_logs = all_logs | selectattr('project_id', 'equalto', project.id) | list %}
+        {% if project_logs %}
+          {% for log in project_logs %}
+            <a href="{{ url_for('views.log_detail', log_id=log.id)}}" class="list-group-item-action border-dark rounded">
+              <div class="d-flex justify-content-between align-items-center p-3 border border-dark rounded">
+                <div class="flex-grow-1">
+                  <h5>{{ log.project.project }}</h5>
+                  <p>{{ log.notes or "No notes" }}</p>
+                  <small>Sometido: {{ log.uploaded_at }}</small><br>
+                  <small>Por: {{ log.user.username }}</small>
+                </div>
+                <div>
+                  {% for image in log.images %}
+                    <img src="{{ url_for('static', filename='logs/' ~ image.filename) }}" alt="Log image" style="max-height: 100px; width: auto;">
+                  {% endfor %}
+                  {% if current_user.group in ['admin'] %}
+                  <button class="btn btn-danger btn-sm" onclick="deleteLog({{ log.id }})">Borrar</button>
+                  {% endif %}
+
+                </div>
+              </div>
+            </a>
+            <br />
+          {% endfor %}
+        {% else %}
+          <div class="list-group-item text-muted">No se encuentran logs de este proyecto.</div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+<br />
+
+
+<!--
+<div class="list-group">
+  {% for log in sorted_logs %}
+    <div class="list-group-item border-dark rounded">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="flex-grow-1">
+          <h5>{{ log.project.project }}</h5>
+          <p>{{ log.notes or "No notes" }}</p>
+          <small>Uploaded: {{ log.uploaded_at }}</small><br>
+          <small>By: {{ log.user.username }}</small>
+        </div>
+        <div>
+          <img src="{{ url_for('static', filename='logs/' ~ log.filename) }}" alt="Log image" style="max-height: 100px; width: auto;">
+        </div>
+      </div>
+    </div>
+    <br />
+  {% endfor %}
+</div>
+-->
+
+<!--
+<h2>Daily Logs</h2>
+<div class="row">
+  {% for log in all_logs %}
+    <div class="col-md-*">
+      <div class="card" style="width: 100%">
+        <div class="row card-body">
+          <div class="col-md-*">
+            <h5>{{ log.project.project }}</h5>
+            <p>{{ log.notes or "No notes" }}</p>
+            <small>Uploaded: {{ log.uploaded_at }}</small><br>
+            <small>By: {{ log.user.username }}</small>
+          </div>
+          
+          <img class="col-md-*" src="{{ url_for('static', filename='logs/' ~ log.filename) }}" width="100">
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+-->
+
+<!--
+<h2>Daily Logs</h2>
+<div class="row">
+  {% for log in all_logs %}
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <img src="{{ url_for('static', filename='logs/' ~ log.filename) }}" width="350">
+        <div class="card-body">
+          <h5>{{ log.project.project }}</h5>
+          <p>{{ log.notes or "No notes" }}</p>
+          <small>Uploaded: {{ log.uploaded_at }}</small><br>
+          <small>By: {{ log.user.username }}</small>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+-->
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Revisión de Petty Cash - {{ petty.petty_num }}{% endblock %}
+
+{% block content %}
+<br />
+<div class="container mt-4">
+  
+  <div class="mb-4">
+      <div class="position-relative" style="height: 56px;">
+        <!-- Back Button (left) -->
+        <a href="#"
+          onclick="history.go(-1)"
+          class="btn btn-outline-dark position-absolute"
+          style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+          &#8592; 
+        </a>
+        <!-- Centered Title -->
+        <h1 class="mb-0 position-absolute w-100 text-center"
+            style="pointer-events: none;" >
+            Revisión - Petty Cash #{{ petty.petty_num }}
+        </h1>
+      </div>
+  </div>
+
+
+ 
+  <p><strong>Usuario:</strong> {{ petty.user.first_name }} {{ petty.user.last_name }}</p>
+  <p><strong>Fecha de creación:</strong> {{ petty.date.strftime('%Y-%m-%d') }}</p>
+  <p><strong>Estado actual:</strong> <span class="badge bg-info text-dark">{{ petty.status }}</span></p>
+
+  <form method="POST" enctype="multipart/form-data">
+    <table class="table table-bordered mt-3">
+      <thead class="table-light">
+        <tr>
+          <th>Fecha</th>
+          <th>Pagado a</th>
+          <th>Materiales</th>
+          <th>Descripción</th>
+          <th>$$</th>
+          <th>Proyecto</th>
+          <th>Recibos</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <!-- Hidden input to preserve item ID -->
+          <input type="hidden" name="item_id[]" value="{{ item.id }}">
+          <td>{{ item.date.strftime('%Y-%m-%d') }}</td>
+          <td>{{ item.paid_to }}</td>
+          <td>{{ item.material }}</td>
+          <td>{{ item.description }}</td>
+          <td>
+            <input type="number" name="quantity[]" step="0.01" class="form-control qty" value="{{ item.quantity }}">
+          </td>
+          <td>
+            {% for project in all_projects %}
+              {% if item.project_id == project.id %}
+                {{ project.project }} - {{ project.jobnumber }}
+              {% endif %}
+            {% endfor %}
+          </td>
+          <td>
+            {% for doc in item.docs %}
+              <div class="uploaded-doc d-flex align-items-center mb-2">
+                <a href="{{ url_for('static', filename='pettycash/' ~ doc.filename) }}" target="_blank" class="me-2">{{ doc.filename }}</a>
+                <button type="button"
+                class="btn btn-sm btn-outline-danger ms-2"
+                onclick="removeExistingFile(this, '{{ item.id }}', '{{ doc.id }}')">
+                  &times;
+                </button>
+              </div>
+            {% endfor %}
+            
+            <div class="d-flex align-items-center mt-1">
+              <input type="file" name="docs_item_{{ item.id }}" class="form-control form-control-sm me-2" onchange="showClearBtn(this)">
+              <button type="button" class="btn btn-danger btn-sm d-none" onclick="clearFileInput(this)">×</button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <div>
+        <h5>Total: ${{ '%.2f'|format(petty.total_amount) }}</h5>
+      </div>
+      <br />
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      {% if petty.status == 'Sometido' %}
+        <textarea name="review_notes" placeholder="Notas:" class="form-control mb-3">{{ petty.review_notes or '' }}</textarea>
+        
+      {% endif %}
+    </div>
+  
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <button type="submit" name="action" value="save" class="btn btn-primary">
+        Guardar Cambios
+      </button>
+      <button type="submit" name="action" value="mark_processed" class="btn btn-success ">
+        Marcar como Procesado
+      </button>
+      
+    </div>
+    
+  </form>
+</div>
+
+<br />
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html"%} {% block title %}PCTM Construction{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <div class="position-relative" style="height: 56px;">
+      <!-- Back Button (left) -->
+      <a href="#"
+        onclick="history.go(-1)"
+         class="btn btn-outline-dark position-absolute"
+         style="top: 50%; left: 0; transform: translateY(-50%); margin-left: 8px;">
+        &#8592; 
+      </a>
+      <!-- Centered Title -->
+      <h1 class="mb-0 position-absolute w-100 text-center"
+          style="pointer-events: none;" >
+        Añadir Materiales
+      </h1>
+    </div>
+  </div>
+
+<form method="POST">
+    <div class="form-group">
+      <label for="MaterialName"> Material</label>
+      <input
+        type="text"
+        class="form-control"
+        id="MaterialName"
+        name="MaterialName"
+        placeholder="Nombre de Material"
+      />
+    </div>
+    <div class="form-group">
+        <label for="Dimensions"> Material</label>
+        <input
+          type="text"
+          class="form-control"
+          id="Dimensions"
+          name="Dimensions"
+          placeholder="Dimenciones"
+        />
+      </div>
+    <div class="form-group">
+        <label for="quantity"> Cantidad</label>
+        <input
+          type="number"
+          class="form-control"
+          id="quantity"
+          name="quantity"
+          placeholder="Entre Cantidad"
+        />
+      </div>
+      <div class="form-group">
+        <label for="Unit" class="h6"> Unidad</label>
+        <p>Ejemplo: pqte. (Paquete), caja, o unidad para articulos sueltos o solos</p>
+        <input
+          type="text"
+          class="form-control"
+          id="Unit"
+          name="Unit"
+          placeholder="Entre Unidad"
+        />
+      </div>
+      <div class="form-group">
+        <label for="Location"> Localización</label>
+        <input
+          type="text"
+          class="form-control"
+          id="Location"
+          name="Location"
+          placeholder="Donde en el taller esta ubicado"
+        />
+      </div>
+   
+    <br />
+    <button type="submit" class="btn btn-primary btn-block"> Submit</button>
+  </form>
+
+  <br/>
+  <h2>Todos los Materiales</h2>
+  <table class="table table-stripped">
+      <thead>
+          <tr>
+              
+              <th>Material</th>
+              <th>Dimenciones</th>
+              <th>Cantidad</th>
+              <th>Unidad</th>
+              <th>Localización</th>
+              <th>Modificar</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for mat in all_materials %}
+          <tr>
+              
+              <td>{{ mat.material_name}}</td>
+              <td>{{ mat.dimensions}}</td>
+              <td>{{ mat.qty}}</td>
+              <td>{{ mat.unit}}</td>
+              <td>{{ mat.loc}}</td>
+              <td>
+                <!-- Button to open modal -->
+                {% if current_user.group in ['admin', 'manager'] %}
+                  <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editModal{{ mat.id }}">
+                    Editar informacion
+                  </button>
+                {% else %}
+                  <p>N/A</p>
+                {% endif %}
+              </td>
+          </tr>
+          <!-- Modal -->
+          <div class="modal fade" id="editModal{{ mat.id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ mat.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <form method="POST" action="{{ url_for('views.materials') }}">
+                <input type="hidden" name="update_id" value="{{ mat.id }}">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel{{ mat.id }}">Editar cantidad y/o Localización</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="qty_new">Nueva cantidad</label>
+                    <input type="number" name="qty_new" class="form-control" required>
+                    <label for="loc_new">Nueva Localización</label>
+                    <input type="text" name="loc_new" class="form-control" required>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+      </tbody>
+  </table>
+
+{% endblock %}

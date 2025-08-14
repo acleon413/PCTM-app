@@ -5,19 +5,19 @@ from os import path
 from flask_login import LoginManager
 import os
 db=SQLAlchemy()
-#DB_NAME = "database.db"
+DB_NAME = "database.db"
 mail = Mail()
 def create_app():
     app = Flask(__name__, static_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static')),
         static_url_path='/static')
     app.config['SECRET_KEY'] = 'PCTMConst'
     # ✅ Full absolute path to ensure SQLite writes to correct DB
-    #db_path = os.path.join(app.instance_path, 'database.db')
-    #app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg2://myuser:mypassword@localhost:5432/mydb"
-)
+    db_path = os.path.join(app.instance_path, 'database.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+    #app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    #"DATABASE_URL",
+    #"postgresql+psycopg2://myuser:mypassword@localhost:5432/mydb"
+#)
 
     app.config.update(
         
